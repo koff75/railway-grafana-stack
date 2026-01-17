@@ -6,8 +6,13 @@ FROM grafana/grafana-oss:${VERSION}
 COPY datasources /etc/grafana/provisioning/datasources
 COPY provisioning/dashboards /etc/grafana/provisioning/dashboards
 
+# grafana image runs as USER 472: entrypoint must be able to edit datasources.yml
+RUN chown -R 472:472 /etc/grafana/provisioning
+
 # copy entrypoint script (--chmod avoids RUN chmod which can fail on some builders)
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
+# ensure LF line endings (CRLF from Windows can break shebang in container)
+RUN sed -i 's/\r$//' /entrypoint.sh 2>/dev/null || true
 
 # use custom entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
