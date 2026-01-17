@@ -1,21 +1,33 @@
 global:
   scrape_interval: 15s # Default scrape interval
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'railway'
+    environment: 'production'
 
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
-  # - job_name: 'example_api'
-  #   scheme: http
-  #   static_configs:
-  #     - targets: ['example_api:9091']
-
-  #  ? TODO: add your services here
-  # - job_name: 'your-job-name'
-  #   scheme: https
-  #   static_configs:
-  #     - targets: ['URL_GOES_HERE']
-  #   basic_auth:
-  #     username: HTTP_AUTH_USERNAME_GOES_HERE
-  #     password: HTTP_AUTH_PASSWORD_GOES_HERE
+  # Scrape Beelzebub (Honeypot n8n)
+  - job_name: 'beelzebub'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          # Option 1: URL publique (recommandé)
+          - '3il-ingenieurs.site'
+          # Option 2: Service interne Railway
+          # - 'beelzebub:8080'
+    scheme: 'https'
+    tls_config:
+      insecure_skip_verify: false
+    relabel_configs:
+      - target_label: service
+        replacement: 'beelzebub'
+      - target_label: environment
+        replacement: 'production'
+      - target_label: honeypot_type
+        replacement: 'n8n'

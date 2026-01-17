@@ -10,22 +10,27 @@ prune: false
 datasources:
   - name: Loki
     type: loki
-    access: direct
+    access: proxy
     orgId: 1
-    uid: grafana_lokiq
+    uid: loki
     url: $LOKI_INTERNAL_URL
     user:
     database:
     basicAuth:
     basicAuthUser:
     withCredentials:
-    isDefault: true
+    isDefault: false
+    jsonData:
+      maxLines: 1000
   - name: Prometheus
     type: prometheus
     access: proxy
     orgId: 1
-    uid: grafana_prometheus
+    uid: prometheus
     url: $PROMETHEUS_INTERNAL_URL
+    isDefault: true
+    jsonData:
+      timeInterval: 15s
     user:
     database:
     basicAuth:
@@ -36,8 +41,12 @@ datasources:
     type: tempo
     access: proxy
     orgId: 1
-    uid: grafana_tempo
+    uid: tempo
     url: $TEMPO_INTERNAL_URL
+    jsonData:
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: loki
     user:
     database:
     basicAuth:
