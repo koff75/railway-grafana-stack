@@ -6,9 +6,8 @@ FROM grafana/grafana-oss:${VERSION}
 COPY datasources /etc/grafana/provisioning/datasources
 COPY provisioning/dashboards /etc/grafana/provisioning/dashboards
 
-# copy and set permissions for entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# copy entrypoint script (--chmod avoids RUN chmod which can fail on some builders)
+COPY --chmod=755 entrypoint.sh /entrypoint.sh
 
 # use custom entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
