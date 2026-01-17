@@ -11,6 +11,5 @@ COPY --chmod=755 entrypoint.sh /entrypoint.sh
 # ensure LF line endings (CRLF from Windows can break shebang in container)
 RUN sed -i 's/\r$//' /entrypoint.sh 2>/dev/null || true
 
-# run as root so entrypoint can write substituted datasources.yml (chown fails on Railway)
-USER root
+# entrypoint writes to /tmp and sets GF_PATHS_PROVISIONING; no root, no chown
 ENTRYPOINT ["/entrypoint.sh"]
