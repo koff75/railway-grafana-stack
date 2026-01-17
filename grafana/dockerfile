@@ -2,14 +2,6 @@ ARG VERSION=11.5.2
 
 FROM grafana/grafana-oss:${VERSION}
 
-# copy the datasources and dashboards
+# copy the datasources and dashboards (pas d'entrypoint custom: utiliser le demarrage par defaut)
 COPY datasources /etc/grafana/provisioning/datasources
 COPY provisioning/dashboards /etc/grafana/provisioning/dashboards
-
-# copy entrypoint script (--chmod avoids RUN chmod which can fail on some builders)
-COPY --chmod=755 entrypoint.sh /entrypoint.sh
-# ensure LF line endings (CRLF from Windows can break shebang in container)
-RUN sed -i 's/\r$//' /entrypoint.sh 2>/dev/null || true
-
-# entrypoint writes to /tmp and sets GF_PATHS_PROVISIONING; no root, no chown
-ENTRYPOINT ["/entrypoint.sh"]
